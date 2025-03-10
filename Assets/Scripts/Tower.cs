@@ -1,18 +1,43 @@
-using System.Collections;
+
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Tower : MonoBehaviour
 {
+    public Transform firePoint;
+    public GameObject bulletPrefab;
+    public float cooldown = 1f;
+    
+    public List<GameObject> enemies;
+    
     // Start is called before the first frame update
     void Start()
     {
+        InvokeRepeating("Fire", 0 , cooldown);
+    }
+    
+    void Fire()
+    {
+        CleanTargets();
+        if (enemies.Count == 0) return;
         
+        var target = enemies[Random.Range(0, enemies.Count)];
+        var bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+        bullet.GetComponent<Bullet>().target = target.transform;
     }
 
-    // Update is called once per frame
-    void Update()
+    void CleanTargets()
     {
-        
+       enemies.RemoveAll(enemy => enemy == null);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.transform.CompareTag("Enemy")) enemies.Add(other.gameObject);
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if(other.transform.CompareTag("Enemy")) enemies.Remove(other.gameObject);
     }
 }
