@@ -5,9 +5,13 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     public GameObject enemyPrefab;
+    [Header("Wave settings")]
+    public int count = 10;
     public Transform spawnPoint;
-    public Vector2 cooldownRange = new Vector2(3f, 6f);
-    // Start is called before the first frame update
+    public float cooldown = 1;
+    [Header("Spawn settings")]
+    public int waveCount = 10;
+    public float waveCooldown = 2;
     void Start()
     {
         StartCoroutine(Spawn());
@@ -15,13 +19,17 @@ public class EnemySpawner : MonoBehaviour
 
     IEnumerator Spawn()
     {
-        while (true)
+        for (int i = 0; i < waveCount; i++)
         {
-            var enemy = enemyPrefab;
-            
-            
-            Instantiate(enemy, spawnPoint.position, Quaternion.identity);
-            yield return new WaitForSeconds(Random.Range(cooldownRange.x, cooldownRange.y));
+            for (int j = 0; j < count; j++)
+            {
+                        Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+                        yield return new WaitForSeconds(cooldown);
+            }
+            yield return new WaitForSeconds(waveCooldown);
         }
+        
+        
+        
     }
 }
